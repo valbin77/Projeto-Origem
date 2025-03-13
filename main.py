@@ -77,7 +77,7 @@ def verificar_login():
 
 
 def abrir_menu_principal():
-    global menu_window, frame_cadastro_produto, frame_visualizar_produtos, entry_nome, entry_validade, entry_preco
+    global menu_window, frame_cadastro_produto, frame_visualizar_produtos, entry_nome, entry_validade, entry_preco, entry_pesquisar
     menu_window = tk.Tk()
     menu_window.title("Menu Principal")
     menu_window.geometry("400x400")
@@ -116,20 +116,44 @@ def abrir_visualizar_produtos():
     limpar_frames()
     frame_visualizar_produtos.pack()
 
+    global entry_pesquisar
     for widget in frame_visualizar_produtos.winfo_children():
         widget.destroy()
 
-    c.execute("SELECT * FROM produtos")
-    produtos = c.fetchall()
+    tk.Label(frame_visualizar_produtos, text="Pesquisar Produto").pack()
+    entry_pesquisar = tk.Entry(frame_visualizar_produtos)
+    entry_pesquisar.pack()
+    tk.Button(frame_visualizar_produtos, text="Pesquisar", command=pesquisar_produtos).pack(pady=5)
+
+    exibir_produtos()
+
+
+def exibir_produtos(produtos=None):
+    if produtos is None:
+        c.execute("SELECT * FROM produtos")
+        produtos = c.fetchall()
+
+    for widget in frame_visualizar_produtos.winfo_children()[3:]:
+        widget.destroy()
 
     for produto in produtos:
         frame = tk.Frame(frame_visualizar_produtos)
         frame.pack()
-        tk.Label(frame,
-                 text=f"ID: {produto[0]} - Nome: {produto[1]} - Validade: {produto[2]} - Preço: {produto[3]}").pack(
-            side="left")
+        tk.Label(frame, text=f"ID: {produto[0]} - Nome: {produto[1]} - Validade: {produto[2]} - Preço: {produto[3]}").pack(side="left")
         tk.Button(frame, text="Editar", command=partial(editar_produto, produto[0])).pack(side="right")
         tk.Button(frame, text="Excluir", command=partial(excluir_produto, produto[0])).pack(side="right")
+
+
+def pesquisar_produtos():
+    termo_pesquisa = entry_pesquisar.get()
+
+    if termo_pesquisa.isdigit():  # Se o termo de pesquisa for um número, pesquisar pelo ID
+        c.execute("SELECT * FROM produtos WHERE id=?", (termo_pesquisa,))
+    else:  # Caso contrário, pesquisar pelo nome
+        c.execute("SELECT * FROM produtos WHERE nome LIKE ?", ('%' + termo_pesquisa + '%',))
+
+    produtos = c.fetchall()
+    exibir_produtos(produtos)
 
 
 def salvar_dados():
