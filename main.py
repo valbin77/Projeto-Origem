@@ -38,7 +38,9 @@ def cadastrar_usuario():
             c.execute("INSERT INTO usuarios (usuario, senha) VALUES (?, ?)", (usuario, senha_hashed))
             conn.commit()
             messagebox.showinfo("Sucesso", "Usuário cadastrado com sucesso!")
-            frame_cadastro_usuario.pack_forget()
+            cadastro_window.destroy()  # Fechar a janela de cadastro
+            entry_usuario.delete(0, tk.END)
+            entry_senha.delete(0, tk.END)
         except sqlite3.IntegrityError:
             messagebox.showerror("Erro", "Usuário já existe!")
     else:
@@ -46,7 +48,19 @@ def cadastrar_usuario():
 
 
 def abrir_tela_cadastro():
-    frame_cadastro_usuario.pack()
+    global cadastro_window, entry_novo_usuario, entry_nova_senha
+
+    cadastro_window = tk.Toplevel(login_window)
+    cadastro_window.title("Cadastrar Usuário")
+    cadastro_window.geometry("300x200")
+
+    tk.Label(cadastro_window, text="Novo Usuário").pack()
+    entry_novo_usuario = tk.Entry(cadastro_window)
+    entry_novo_usuario.pack()
+    tk.Label(cadastro_window, text="Nova Senha").pack()
+    entry_nova_senha = tk.Entry(cadastro_window, show="*")
+    entry_nova_senha.pack()
+    tk.Button(cadastro_window, text="Cadastrar", command=cadastrar_usuario).pack(pady=10)
 
 
 def verificar_login():
@@ -205,16 +219,5 @@ entry_senha = tk.Entry(frame_login, show="*")
 entry_senha.pack()
 tk.Button(frame_login, text="Entrar", command=verificar_login).pack(pady=5)
 tk.Button(frame_login, text="Cadastrar Usuário", command=abrir_tela_cadastro).pack(pady=5)
-
-frame_cadastro_usuario = tk.Frame(login_window)
-frame_cadastro_usuario.pack_forget()
-
-tk.Label(frame_cadastro_usuario, text="Novo Usuário").pack()
-entry_novo_usuario = tk.Entry(frame_cadastro_usuario)
-entry_novo_usuario.pack()
-tk.Label(frame_cadastro_usuario, text="Nova Senha").pack()
-entry_nova_senha = tk.Entry(frame_cadastro_usuario, show="*")
-entry_nova_senha.pack()
-tk.Button(frame_cadastro_usuario, text="Cadastrar", command=cadastrar_usuario).pack(pady=10)
 
 login_window.mainloop()
