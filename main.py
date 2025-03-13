@@ -135,7 +135,49 @@ def salvar_dados():
 
 
 def editar_produto(produto_id):
-    messagebox.showinfo("Editar", f"Editar produto ID: {produto_id}")
+    limpar_frames()
+    frame_cadastro_produto.pack()
+
+    c.execute("SELECT * FROM produtos WHERE id=?", (produto_id,))
+    produto = c.fetchone()
+
+    if produto:
+        global entry_nome, entry_validade, entry_preco
+
+        for widget in frame_cadastro_produto.winfo_children():
+            widget.destroy()
+
+        tk.Label(frame_cadastro_produto, text="Nome").pack()
+        entry_nome = tk.Entry(frame_cadastro_produto)
+        entry_nome.insert(0, produto[1])
+        entry_nome.pack()
+
+        tk.Label(frame_cadastro_produto, text="Validade").pack()
+        entry_validade = tk.Entry(frame_cadastro_produto)
+        entry_validade.insert(0, produto[2])
+        entry_validade.pack()
+
+        tk.Label(frame_cadastro_produto, text="Preço").pack()
+        entry_preco = tk.Entry(frame_cadastro_produto)
+        entry_preco.insert(0, produto[3])
+        entry_preco.pack()
+
+        tk.Button(frame_cadastro_produto, text="Salvar", command=partial(salvar_edicao, produto_id)).pack(pady=10)
+
+
+def salvar_edicao(produto_id):
+    nome = entry_nome.get()
+    validade = entry_validade.get()
+    preco = entry_preco.get()
+
+    if nome and validade and preco:
+        c.execute("UPDATE produtos SET nome=?, validade=?, preco=? WHERE id=?", (nome, validade, preco, produto_id))
+        conn.commit()
+        messagebox.showinfo("Sucesso", "Produto atualizado com sucesso!")
+        limpar_frames()
+        abrir_visualizar_produtos()
+    else:
+        messagebox.showwarning("Atenção", "Preencha todos os campos!")
 
 
 def excluir_produto(produto_id):
