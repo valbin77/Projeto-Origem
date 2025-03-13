@@ -245,3 +245,7 @@ tk.Button(frame_login, text="Entrar", command=verificar_login).pack(pady=5)
 tk.Button(frame_login, text="Cadastrar Usuário", command=abrir_tela_cadastro).pack(pady=5)
 
 login_window.mainloop()
+#mudar a cor das janelas
+#mudar a cor dos botoes
+#aumentar e mudar a cor da fonte
+#mostrar a quantidade em estoque
