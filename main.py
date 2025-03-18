@@ -25,6 +25,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS usuarios (
 )''')
 conn.commit()
 
+# Cor de fundo
+BACKGROUND_COLOR = "#48cae4"
+
 
 def limpar_frames():
     frame_cadastro_produto.pack_forget()
@@ -57,10 +60,12 @@ def abrir_tela_cadastro():
     cadastro_window.title("Cadastrar Usuário")
     cadastro_window.geometry("300x800")
 
-    tk.Label(cadastro_window, text="Novo Usuário").pack()
+    cadastro_window.config(bg=BACKGROUND_COLOR)
+
+    tk.Label(cadastro_window, text="Novo Usuário", bg=BACKGROUND_COLOR).pack()
     entry_novo_usuario = tk.Entry(cadastro_window)
     entry_novo_usuario.pack()
-    tk.Label(cadastro_window, text="Nova Senha").pack()
+    tk.Label(cadastro_window, text="Nova Senha", bg=BACKGROUND_COLOR).pack()
     entry_nova_senha = tk.Entry(cadastro_window, show="*")
     entry_nova_senha.pack()
     tk.Button(cadastro_window, text="Cadastrar", command=cadastrar_usuario).pack(pady=10)
@@ -85,14 +90,16 @@ def abrir_menu_principal():
     menu_window.title("Menu Principal")
     menu_window.geometry("800x400")
 
-    menu_frame = tk.Frame(menu_window)
+    menu_window.config(bg=BACKGROUND_COLOR)
+
+    menu_frame = tk.Frame(menu_window, bg=BACKGROUND_COLOR)
     menu_frame.pack(anchor="w", padx=10, pady=5)
 
     tk.Button(menu_frame, text="Cadastrar Produto", command=abrir_cadastro_produto).pack(side="left", padx=5)
     tk.Button(menu_frame, text="Visualizar Produtos", command=abrir_visualizar_produtos).pack(side="left", padx=5)
 
-    frame_cadastro_produto = tk.Frame(menu_window)
-    frame_visualizar_produtos = tk.Frame(menu_window)
+    frame_cadastro_produto = tk.Frame(menu_window, bg=BACKGROUND_COLOR)
+    frame_visualizar_produtos = tk.Frame(menu_window, bg=BACKGROUND_COLOR)
 
 
 def abrir_cadastro_produto():
@@ -103,27 +110,27 @@ def abrir_cadastro_produto():
     for widget in frame_cadastro_produto.winfo_children():
         widget.destroy()
 
-    tk.Label(frame_cadastro_produto, text="Descrição do Produto").pack()
+    tk.Label(frame_cadastro_produto, text="Descrição do Produto", bg=BACKGROUND_COLOR).pack()
     entry_descricao = tk.Entry(frame_cadastro_produto)
     entry_descricao.pack()
 
-    tk.Label(frame_cadastro_produto, text="Tipo Unitário").pack()
+    tk.Label(frame_cadastro_produto, text="Tipo Unitário", bg=BACKGROUND_COLOR).pack()
     entry_tipo_unitario = tk.Entry(frame_cadastro_produto)
     entry_tipo_unitario.pack()
 
-    tk.Label(frame_cadastro_produto, text="Quantidade em Estoque").pack()
+    tk.Label(frame_cadastro_produto, text="Quantidade em Estoque", bg=BACKGROUND_COLOR).pack()
     entry_quantidade_estoque = tk.Entry(frame_cadastro_produto)
     entry_quantidade_estoque.pack()
 
-    tk.Label(frame_cadastro_produto, text="Lote").pack()
+    tk.Label(frame_cadastro_produto, text="Lote", bg=BACKGROUND_COLOR).pack()
     entry_lote = tk.Entry(frame_cadastro_produto)
     entry_lote.pack()
 
-    tk.Label(frame_cadastro_produto, text="Validade").pack()
+    tk.Label(frame_cadastro_produto, text="Validade", bg=BACKGROUND_COLOR).pack()
     entry_validade = tk.Entry(frame_cadastro_produto)
     entry_validade.pack()
 
-    tk.Label(frame_cadastro_produto, text="Preço").pack()
+    tk.Label(frame_cadastro_produto, text="Preço", bg=BACKGROUND_COLOR).pack()
     entry_preco = tk.Entry(frame_cadastro_produto)
     entry_preco.pack()
 
@@ -138,7 +145,7 @@ def abrir_visualizar_produtos():
     for widget in frame_visualizar_produtos.winfo_children():
         widget.destroy()
 
-    tk.Label(frame_visualizar_produtos, text="Pesquisar Produto").pack()
+    tk.Label(frame_visualizar_produtos, text="Pesquisar Produto", bg=BACKGROUND_COLOR).pack()
     entry_pesquisar = tk.Entry(frame_visualizar_produtos)
     entry_pesquisar.pack()
     tk.Button(frame_visualizar_produtos, text="Pesquisar", command=pesquisar_produtos).pack(pady=5)
@@ -155,9 +162,9 @@ def exibir_produtos(produtos=None):
         widget.destroy()
 
     for produto in produtos:
-        frame = tk.Frame(frame_visualizar_produtos)
+        frame = tk.Frame(frame_visualizar_produtos, bg=BACKGROUND_COLOR)
         frame.pack()
-        tk.Label(frame, text=f"ID: {produto[0]} - Descrição: {produto[1]} - Tipo: {produto[2]} - Quantidade: {produto[3]} - Lote: {produto[4]} - Validade: {produto[5]} - Preço: {produto[6]}").pack(side="left")
+        tk.Label(frame, text=f"ID: {produto[0]} - Descrição: {produto[1]} - Tipo: {produto[2]} - Quantidade: {produto[3]} - Lote: {produto[4]} - Validade: {produto[5]} - Preço: {produto[6]}", bg=BACKGROUND_COLOR).pack(side="left")
         tk.Button(frame, text="Editar", command=partial(editar_produto, produto[0])).pack(side="right")
         tk.Button(frame, text="Excluir", command=partial(excluir_produto, produto[0])).pack(side="right")
 
@@ -210,32 +217,32 @@ def editar_produto(produto_id):
         for widget in frame_cadastro_produto.winfo_children():
             widget.destroy()
 
-        tk.Label(frame_cadastro_produto, text="Descrição do Produto").pack()
+        tk.Label(frame_cadastro_produto, text="Descrição do Produto", bg=BACKGROUND_COLOR).pack()
         entry_descricao = tk.Entry(frame_cadastro_produto)
         entry_descricao.insert(0, produto[1])
         entry_descricao.pack()
 
-        tk.Label(frame_cadastro_produto, text="Tipo Unitário").pack()
+        tk.Label(frame_cadastro_produto, text="Tipo Unitário", bg=BACKGROUND_COLOR).pack()
         entry_tipo_unitario = tk.Entry(frame_cadastro_produto)
         entry_tipo_unitario.insert(0, produto[2])
         entry_tipo_unitario.pack()
 
-        tk.Label(frame_cadastro_produto, text="Quantidade em Estoque").pack()
+        tk.Label(frame_cadastro_produto, text="Quantidade em Estoque", bg=BACKGROUND_COLOR).pack()
         entry_quantidade_estoque = tk.Entry(frame_cadastro_produto)
         entry_quantidade_estoque.insert(0, produto[3])
         entry_quantidade_estoque.pack()
 
-        tk.Label(frame_cadastro_produto, text="Lote").pack()
+        tk.Label(frame_cadastro_produto, text="Lote", bg=BACKGROUND_COLOR).pack()
         entry_lote = tk.Entry(frame_cadastro_produto)
         entry_lote.insert(0, produto[4])
         entry_lote.pack()
 
-        tk.Label(frame_cadastro_produto, text="Validade").pack()
+        tk.Label(frame_cadastro_produto, text="Validade", bg=BACKGROUND_COLOR).pack()
         entry_validade = tk.Entry(frame_cadastro_produto)
         entry_validade.insert(0, produto[5])
         entry_validade.pack()
 
-        tk.Label(frame_cadastro_produto, text="Preço").pack()
+        tk.Label(frame_cadastro_produto, text="Preço", bg=BACKGROUND_COLOR).pack()
         entry_preco = tk.Entry(frame_cadastro_produto)
         entry_preco.insert(0, produto[6])
         entry_preco.pack()
@@ -276,13 +283,15 @@ login_window = tk.Tk()
 login_window.title("Login")
 login_window.geometry("300x200")
 
-frame_login = tk.Frame(login_window)
+login_window.config(bg=BACKGROUND_COLOR)
+
+frame_login = tk.Frame(login_window, bg=BACKGROUND_COLOR)
 frame_login.pack()
 
-tk.Label(frame_login, text="Usuário").pack()
+tk.Label(frame_login, text="Usuário", bg=BACKGROUND_COLOR).pack()
 entry_usuario = tk.Entry(frame_login)
 entry_usuario.pack()
-tk.Label(frame_login, text="Senha").pack()
+tk.Label(frame_login, text="Senha", bg=BACKGROUND_COLOR).pack()
 entry_senha = tk.Entry(frame_login, show="*")
 entry_senha.pack()
 tk.Button(frame_login, text="Entrar", command=verificar_login).pack(pady=5)
