@@ -8,10 +8,13 @@ from functools import partial
 conn = sqlite3.connect("lanchonete.db")
 c = conn.cursor()
 
-# Criar tabelas se não existirem
+# Criar tabelas se não existirem (atualizado com os novos campos)
 c.execute('''CREATE TABLE IF NOT EXISTS produtos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT,
+    descricao TEXT,
+    tipo_unitario TEXT,
+    quantidade_estoque INTEGER,
+    lote TEXT,
     validade TEXT,
     preco TEXT
 )''')
@@ -77,7 +80,7 @@ def verificar_login():
 
 
 def abrir_menu_principal():
-    global menu_window, frame_cadastro_produto, frame_visualizar_produtos, entry_nome, entry_validade, entry_preco, entry_pesquisar
+    global menu_window, frame_cadastro_produto, frame_visualizar_produtos, entry_descricao, entry_tipo_unitario, entry_quantidade_estoque, entry_lote, entry_validade, entry_preco, entry_pesquisar
     menu_window = tk.Tk()
     menu_window.title("Menu Principal")
     menu_window.geometry("400x400")
@@ -96,19 +99,34 @@ def abrir_cadastro_produto():
     limpar_frames()
     frame_cadastro_produto.pack()
 
-    global entry_nome, entry_validade, entry_preco
+    global entry_descricao, entry_tipo_unitario, entry_quantidade_estoque, entry_lote, entry_validade, entry_preco
     for widget in frame_cadastro_produto.winfo_children():
         widget.destroy()
 
-    tk.Label(frame_cadastro_produto, text="Nome").pack()
-    entry_nome = tk.Entry(frame_cadastro_produto)
-    entry_nome.pack()
+    tk.Label(frame_cadastro_produto, text="Descrição do Produto").pack()
+    entry_descricao = tk.Entry(frame_cadastro_produto)
+    entry_descricao.pack()
+
+    tk.Label(frame_cadastro_produto, text="Tipo Unitário").pack()
+    entry_tipo_unitario = tk.Entry(frame_cadastro_produto)
+    entry_tipo_unitario.pack()
+
+    tk.Label(frame_cadastro_produto, text="Quantidade em Estoque").pack()
+    entry_quantidade_estoque = tk.Entry(frame_cadastro_produto)
+    entry_quantidade_estoque.pack()
+
+    tk.Label(frame_cadastro_produto, text="Lote").pack()
+    entry_lote = tk.Entry(frame_cadastro_produto)
+    entry_lote.pack()
+
     tk.Label(frame_cadastro_produto, text="Validade").pack()
     entry_validade = tk.Entry(frame_cadastro_produto)
     entry_validade.pack()
+
     tk.Label(frame_cadastro_produto, text="Preço").pack()
     entry_preco = tk.Entry(frame_cadastro_produto)
     entry_preco.pack()
+
     tk.Button(frame_cadastro_produto, text="Salvar", command=salvar_dados).pack(pady=10)
 
 
@@ -139,7 +157,7 @@ def exibir_produtos(produtos=None):
     for produto in produtos:
         frame = tk.Frame(frame_visualizar_produtos)
         frame.pack()
-        tk.Label(frame, text=f"ID: {produto[0]} - Nome: {produto[1]} - Validade: {produto[2]} - Preço: {produto[3]}").pack(side="left")
+        tk.Label(frame, text=f"ID: {produto[0]} - Descrição: {produto[1]} - Tipo: {produto[2]} - Quantidade: {produto[3]} - Lote: {produto[4]} - Validade: {produto[5]} - Preço: {produto[6]}").pack(side="left")
         tk.Button(frame, text="Editar", command=partial(editar_produto, produto[0])).pack(side="right")
         tk.Button(frame, text="Excluir", command=partial(excluir_produto, produto[0])).pack(side="right")
 
@@ -150,22 +168,29 @@ def pesquisar_produtos():
     if termo_pesquisa.isdigit():  # Se o termo de pesquisa for um número, pesquisar pelo ID
         c.execute("SELECT * FROM produtos WHERE id=?", (termo_pesquisa,))
     else:  # Caso contrário, pesquisar pelo nome
-        c.execute("SELECT * FROM produtos WHERE nome LIKE ?", ('%' + termo_pesquisa + '%',))
+        c.execute("SELECT * FROM produtos WHERE descricao LIKE ?", ('%' + termo_pesquisa + '%',))
 
     produtos = c.fetchall()
     exibir_produtos(produtos)
 
 
 def salvar_dados():
-    nome = entry_nome.get()
+    descricao = entry_descricao.get()
+    tipo_unitario = entry_tipo_unitario.get()
+    quantidade_estoque = entry_quantidade_estoque.get()
+    lote = entry_lote.get()
     validade = entry_validade.get()
     preco = entry_preco.get()
 
-    if nome and validade and preco:
-        c.execute("INSERT INTO produtos (nome, validade, preco) VALUES (?,?,?)", (nome, validade, preco))
+    if descricao and tipo_unitario and quantidade_estoque and lote and validade and preco:
+        c.execute("INSERT INTO produtos (descricao, tipo_unitario, quantidade_estoque, lote, validade, preco) VALUES (?,?,?,?,?,?)",
+                  (descricao, tipo_unitario, quantidade_estoque, lote, validade, preco))
         conn.commit()
         messagebox.showinfo("Sucesso", "Produto cadastrado com sucesso!")
-        entry_nome.delete(0, tk.END)
+        entry_descricao.delete(0, tk.END)
+        entry_tipo_unitario.delete(0, tk.END)
+        entry_quantidade_estoque.delete(0, tk.END)
+        entry_lote.delete(0, tk.END)
         entry_validade.delete(0, tk.END)
         entry_preco.delete(0, tk.END)
     else:
@@ -180,36 +205,55 @@ def editar_produto(produto_id):
     produto = c.fetchone()
 
     if produto:
-        global entry_nome, entry_validade, entry_preco
+        global entry_descricao, entry_tipo_unitario, entry_quantidade_estoque, entry_lote, entry_validade, entry_preco
 
         for widget in frame_cadastro_produto.winfo_children():
             widget.destroy()
 
-        tk.Label(frame_cadastro_produto, text="Nome").pack()
-        entry_nome = tk.Entry(frame_cadastro_produto)
-        entry_nome.insert(0, produto[1])
-        entry_nome.pack()
+        tk.Label(frame_cadastro_produto, text="Descrição do Produto").pack()
+        entry_descricao = tk.Entry(frame_cadastro_produto)
+        entry_descricao.insert(0, produto[1])
+        entry_descricao.pack()
+
+        tk.Label(frame_cadastro_produto, text="Tipo Unitário").pack()
+        entry_tipo_unitario = tk.Entry(frame_cadastro_produto)
+        entry_tipo_unitario.insert(0, produto[2])
+        entry_tipo_unitario.pack()
+
+        tk.Label(frame_cadastro_produto, text="Quantidade em Estoque").pack()
+        entry_quantidade_estoque = tk.Entry(frame_cadastro_produto)
+        entry_quantidade_estoque.insert(0, produto[3])
+        entry_quantidade_estoque.pack()
+
+        tk.Label(frame_cadastro_produto, text="Lote").pack()
+        entry_lote = tk.Entry(frame_cadastro_produto)
+        entry_lote.insert(0, produto[4])
+        entry_lote.pack()
 
         tk.Label(frame_cadastro_produto, text="Validade").pack()
         entry_validade = tk.Entry(frame_cadastro_produto)
-        entry_validade.insert(0, produto[2])
+        entry_validade.insert(0, produto[5])
         entry_validade.pack()
 
         tk.Label(frame_cadastro_produto, text="Preço").pack()
         entry_preco = tk.Entry(frame_cadastro_produto)
-        entry_preco.insert(0, produto[3])
+        entry_preco.insert(0, produto[6])
         entry_preco.pack()
 
         tk.Button(frame_cadastro_produto, text="Salvar", command=partial(salvar_edicao, produto_id)).pack(pady=10)
 
 
 def salvar_edicao(produto_id):
-    nome = entry_nome.get()
+    descricao = entry_descricao.get()
+    tipo_unitario = entry_tipo_unitario.get()
+    quantidade_estoque = entry_quantidade_estoque.get()
+    lote = entry_lote.get()
     validade = entry_validade.get()
     preco = entry_preco.get()
 
-    if nome and validade and preco:
-        c.execute("UPDATE produtos SET nome=?, validade=?, preco=? WHERE id=?", (nome, validade, preco, produto_id))
+    if descricao and tipo_unitario and quantidade_estoque and lote and validade and preco:
+        c.execute("UPDATE produtos SET descricao=?, tipo_unitario=?, quantidade_estoque=?, lote=?, validade=?, preco=? WHERE id=?",
+                  (descricao, tipo_unitario, quantidade_estoque, lote, validade, preco, produto_id))
         conn.commit()
         messagebox.showinfo("Sucesso", "Produto atualizado com sucesso!")
         limpar_frames()
@@ -245,7 +289,3 @@ tk.Button(frame_login, text="Entrar", command=verificar_login).pack(pady=5)
 tk.Button(frame_login, text="Cadastrar Usuário", command=abrir_tela_cadastro).pack(pady=5)
 
 login_window.mainloop()
-#mudar a cor das janelas
-#mudar a cor dos botoes
-#aumentar e mudar a cor da fonte
-#mostrar a quantidade em estoque
