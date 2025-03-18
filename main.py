@@ -55,7 +55,7 @@ def abrir_tela_cadastro():
 
     cadastro_window = tk.Toplevel(login_window)
     cadastro_window.title("Cadastrar Usuário")
-    cadastro_window.geometry("300x200")
+    cadastro_window.geometry("300x800")
 
     tk.Label(cadastro_window, text="Novo Usuário").pack()
     entry_novo_usuario = tk.Entry(cadastro_window)
@@ -83,7 +83,7 @@ def abrir_menu_principal():
     global menu_window, frame_cadastro_produto, frame_visualizar_produtos, entry_descricao, entry_tipo_unitario, entry_quantidade_estoque, entry_lote, entry_validade, entry_preco, entry_pesquisar
     menu_window = tk.Tk()
     menu_window.title("Menu Principal")
-    menu_window.geometry("400x400")
+    menu_window.geometry("800x400")
 
     menu_frame = tk.Frame(menu_window)
     menu_frame.pack(anchor="w", padx=10, pady=5)
